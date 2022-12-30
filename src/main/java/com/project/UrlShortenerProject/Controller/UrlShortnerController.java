@@ -1,6 +1,7 @@
 package com.project.UrlShortenerProject.Controller;
 
 import com.project.UrlShortenerProject.constants.CacheConstants;
+import com.project.UrlShortenerProject.constants.RestURIConstants;
 import com.project.UrlShortenerProject.model.Url;
 import com.project.UrlShortenerProject.model.UrlDto;
 import com.project.UrlShortenerProject.model.UrlErrorResponseDto;
@@ -17,12 +18,13 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 @RestController
+@RequestMapping(RestURIConstants.BASE_URI)
 public class UrlShortnerController {
 
     @Autowired
     private UrlService urlService;
 
-    @PostMapping("/generate")
+    @RequestMapping(value=RestURIConstants.GENERATE_SHORT_LINK, method = RequestMethod.POST, produces = RestURIConstants.APPLICATION_JSON)
     public ResponseEntity<?> generateShortLink(@RequestBody UrlDto urlDto) {
         Url urlToRet = urlService.generateShortLink(urlDto);
         if(urlToRet != null) {
@@ -39,7 +41,7 @@ public class UrlShortnerController {
         return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/{shortLink}")
+    @RequestMapping(value=RestURIConstants.REDIRECT_TO_ORIGINAL, method = RequestMethod.GET, produces = RestURIConstants.APPLICATION_JSON)
     public ResponseEntity<?> redirectToOriginalUrl(@PathVariable String shortLink, HttpServletResponse response) throws IOException {
         if(StringUtils.isEmpty(shortLink)) {
             UrlErrorResponseDto errorResponseDto = new UrlErrorResponseDto();
