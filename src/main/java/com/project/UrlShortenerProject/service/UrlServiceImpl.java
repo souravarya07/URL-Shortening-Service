@@ -3,6 +3,7 @@ package com.project.UrlShortenerProject.service;
 import com.google.common.hash.Hashing;
 import com.project.UrlShortenerProject.model.Url;
 import com.project.UrlShortenerProject.model.UrlDto;
+import com.project.UrlShortenerProject.model.UrlRequest;
 import com.project.UrlShortenerProject.model.UrlResponseDto;
 import com.project.UrlShortenerProject.repository.UrlRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import javax.validation.Valid;
 
 @Service
 public class UrlServiceImpl implements UrlService{
@@ -64,5 +67,13 @@ public class UrlServiceImpl implements UrlService{
     @Override
     public void deleteShortLink(Url url) {
         urlRepository.delete(url);
+    }
+
+    /*
+     * Making use of threading and caching for this approach
+     */
+    @Override
+    public void shortenUrlV2(@Valid UrlRequest urlrequest) {
+        
     }
 }

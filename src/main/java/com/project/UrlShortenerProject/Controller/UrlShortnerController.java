@@ -1,11 +1,15 @@
 package com.project.UrlShortenerProject.Controller;
 
+import com.project.UrlShortenerProject.Utility.UrlValidator;
 import com.project.UrlShortenerProject.constants.CacheConstants;
 import com.project.UrlShortenerProject.constants.RestURIConstants;
 import com.project.UrlShortenerProject.model.Url;
 import com.project.UrlShortenerProject.model.UrlDto;
 import com.project.UrlShortenerProject.model.UrlErrorResponseDto;
+import com.project.UrlShortenerProject.model.UrlRequest;
 import com.project.UrlShortenerProject.model.UrlResponseDto;
+import com.project.UrlShortenerProject.model.exception.UrlServiceException;
+import com.project.UrlShortenerProject.model.exception.UrlServiceExceptionCode;
 import com.project.UrlShortenerProject.service.UrlService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -23,6 +29,7 @@ public class UrlShortnerController {
 
     @Autowired
     private UrlService urlService;
+
 
     @RequestMapping(value=RestURIConstants.GENERATE_SHORT_LINK, method = RequestMethod.POST, produces = RestURIConstants.APPLICATION_JSON)
     public ResponseEntity<?> generateShortLink(@RequestBody UrlDto urlDto) {
@@ -66,5 +73,16 @@ public class UrlShortnerController {
         }
         response.sendRedirect(urlToRet.getOriginalUrl());
         return null;
+    }
+
+    
+    @PostMapping(value = RestURIConstants.GENERATE_SHORT_LINK, consumes = "application/json")
+    public String shortenUrl(@RequestBody @Valid UrlRequest urlrequest) {
+        String longUrl = urlrequest.getUrl();
+        if (UrlValidator.validateUrl(longUrl)) {
+            urlService.shortenUrlV2(urlrequest);
+        }
+        throw new UrlServiceException(UrlServiceExceptionCode.URL_INVALID_ERROR);
+
     }
 }
